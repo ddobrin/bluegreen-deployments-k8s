@@ -1,6 +1,7 @@
 package com.example.messageservice;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Optional;
 
+@RefreshScope
 @RestController
 public class MessageController {
 
@@ -20,12 +22,15 @@ public class MessageController {
         this.quoteRepository = quoteRepository;
     }
 
-
+    @Value("${service_version}")
+    private String serviceVersion;
 
     @GetMapping("/")
-    public Quote radomQuote()
+    public Quote randomQuote()
     {
-        return quoteRepository.findRandomQuote();
+        Quote q = quoteRepository.findRandomQuote();
+        q.setQuote(String.format("Service version: %s - Quote: %s", serviceVersion, q.getQuote()));
+        return q;
     }
 
     @GetMapping("/quotes")

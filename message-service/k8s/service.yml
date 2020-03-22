@@ -12,4 +12,5 @@ spec:
     targetPort: 8080
   selector:
     app: message-service
+    version: blue
   type: NodePort

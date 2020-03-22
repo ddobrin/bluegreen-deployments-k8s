@@ -5,6 +5,11 @@ public class Quote
     private Integer id;
     private String quote;
     private String author;
+    private String version;
+
+    public String getVersion() { return version; }
+
+    public void setVersion(String version) { this.version = version; }
 
     public Integer getId() {
         return id;

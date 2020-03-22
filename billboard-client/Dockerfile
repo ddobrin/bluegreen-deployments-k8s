@@ -7,7 +7,7 @@
 # in the first stage we extract the executable boot jar into /app
 # so that the following stage can copy it
 FROM adoptopenjdk:11-jdk-hotspot AS exploded
-COPY target/billboard-client-0.0.1-SNAPSHOT.jar /app.jar
+COPY target/billboard-client-1.0.0.jar /app.jar
 RUN mkdir /app \
   && cd /app \
   && jar xf /app.jar
