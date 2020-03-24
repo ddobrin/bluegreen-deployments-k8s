@@ -1,4 +1,4 @@
-# Demo for Blue-Green deployments in Kubernetes.
+# Demo for Blue-Green deployments in Kubernetes
 
 The demo applications in this repo are leveraging Spring Cloud Kubernetes and *DO NOT* use a service discovery mechanism (Consul, Eureka, etc)
 
@@ -23,3 +23,17 @@ Please note that once you have deployed and fully tested the service in Green, y
 This technique eliminates downtime due to app deployment. 
 
 Finally, blue-green deployment reduces risk: if something unexpected happens with your new version on Green, you can immediately roll back to the last version by switching back to Blue.
+
+## Blue Green deployment process
+
+**The Blue service version deployment:**
+
+![Blue Version Deployment](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s1.png)  
+
+**The Green service version deployment:**
+
+![Green Version Deployment](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s2.png)  
+
+**The Blue - Green switch:**
+
+![Blue-Green Switch](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s3.png)
