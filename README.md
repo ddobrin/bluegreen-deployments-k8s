@@ -26,14 +26,55 @@ Finally, blue-green deployment reduces risk: if something unexpected happens wit
 
 ## Blue Green deployment process
 
+The process is broken down into four distinct processes
+1. The Blue service version is deployed and exposed using a Kubernetes service, which matches the selector of the Blue service version
+2. The Green service version is deployed but NOT exposed using a service
+3. The service is being updated to match the selector of the Green service version. Clients are thus redirected to the pods of the Green service version, and becomes the active deployment.
+4. The Blue service version can be decommissioned once business acceptance is complete. In case of an error, step 3 is being reverted to the Blue version on short notice with zero-downtime
+
 **The Blue service version deployment:**
 
 ![Blue Version Deployment](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s1.png)  
+
+The deployment of the blue service version can be created using the command:
+```shell
+> kubectl apply -f deployment.yaml
+```
+
+Once we have a deployment created we can provide a way to access the instances of the deployment by creating a Service. Services are decoupled from deployments so that means that you don't explicitly point a service at a deployment. What you do instead is specify a label selector which is used to list the pods that make up the service. When using deployments, this is typically set up so that it matches the pods for a deployment.
+
+The service can be created using the command:
+```shell
+> kubectl apply –f service.yaml
+```
+
+The selector of the service matches the Blue service version:
+```yaml
+  selector:
+    app: message-service
+    version: blue
+```
 
 **The Green service version deployment:**
 
 ![Green Version Deployment](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s2.png)  
 
+The Green service version will be deployed in parallel with the Blue service version.
+```shell
+> kubectl apply -f deployment-green.yaml
+```
+
 **The Blue - Green switch:**
 
 ![Blue-Green Switch](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s3.png)
+
+To "switch over" to the Green service version, we are updating the selector of the Service and applying it in Kubernetes:
+```yaml
+  selector:
+    app: message-service
+    version: green
+```
+The command to update the service with zero-downtime for the consumer is the same:
+```shell
+> kubectl apply –f service.yaml
+```
