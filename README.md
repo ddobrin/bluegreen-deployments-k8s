@@ -1,7 +1,14 @@
 # Demo for Blue-Green deployments in Kubernetes
 
-The demo applications in this repo are leveraging Spring Cloud Kubernetes and *DO NOT* use a service discovery mechanism (Consul, Eureka, etc)
+The demo applications in this repo are leveraging Spring Cloud Kubernetes and *DO NOT* use a service discovery mechanism (Consul, Eureka, etc). It runs in any Kubernetes distribution.
 
+The demo touches upon the following areas:
+1. [The Kubernetes model for connecting containers](#1)
+2. [Why Blue-Green deployments](#2)
+3. [Blue Green deployment process](#3)
+4. [Hands-on Blue Green deployment](#4)
+
+<a name="1"></a>
 ## The Kubernetes model for connecting containers
 Once you have a continuously running, replicated application you can expose it on a network. Before discussing the Kubernetes approach to networking, it is worthwhile to contrast it with the “normal” way networking works with Docker.
 
@@ -9,6 +16,7 @@ By default, Docker uses host-private networking, so containers can talk to other
 
 Coordinating port allocations across multiple developers or teams that provide containers is very difficult to do at scale, and exposes users to cluster-level issues outside of their control. Kubernetes assumes that pods can communicate with other pods, regardless of which host they land on. Kubernetes gives every pod its own cluster-private IP address, so you do not need to explicitly create links between pods or map container ports to host ports. This means that containers within a Pod can all reach each other’s ports on localhost, and all pods in a cluster can see each other without NAT. The rest of this document elaborates on how you can run reliable services on such a networking model.
 
+<a name="2"></a>
 ## Why Blue-Green deployments
 Blue-green deployment is a technique that reduces downtime and risk by running two identical production environments, called for example Blue and Green.
 
@@ -24,6 +32,7 @@ This technique eliminates downtime due to app deployment.
 
 Finally, blue-green deployment reduces risk: if something unexpected happens with your new version on Green, you can immediately roll back to the last version by switching back to Blue.
 
+<a name="3"></a>
 ## Blue Green deployment process
 
 The process is broken down into four distinct processes
@@ -31,6 +40,9 @@ The process is broken down into four distinct processes
 2. The Green service version is deployed but NOT exposed using a service
 3. The service is being updated to match the selector of the Green service version. Clients are thus redirected to the pods of the Green service version, and becomes the active deployment.
 4. The Blue service version can be decommissioned once business acceptance is complete. In case of an error, step 3 is being reverted to the Blue version on short notice with zero-downtime
+
+<a name="4"></a>
+## Hands-on Blue Green deployment 
 
 **The Blue service version deployment:**
 
