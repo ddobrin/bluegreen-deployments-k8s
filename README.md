@@ -44,9 +44,28 @@ The process is broken down into four distinct processes
 <a name="4"></a>
 ## Hands-on Blue Green deployment 
 
+Let's start with cloning the repo:
+```shell
+> git clone git@github.com:ddobrin/bluegreen-deployments-k8s.git
+> cd bluegreen-deployments-k8s
+```
+
+The application within the demo deploys two services, each of them built producing its own Docker image, which will be deployed in Kubernetes:
+1. A front-end **billboard-client** microservice, which displays quotes produced by the back-end
+2. A back-end **message-service** microservice, which produces quotes upon executing incoming requests. It is the **message-service** which will be used to demonstrate  blue-green deployments.
+
 **The Blue service version deployment:**
 
+The Docker images are produced by running the **build-image-blue.sh** script.
+Please note that, for the purpose of the demo, the message-service responds to client requests by indicating which version of the service produces the response: **blue** in this case.
+
 ![Blue Version Deployment](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s1.png)  
+
+To start, we set up for the demo a number of related Kubernetes resources:
+```shell
+> kubectl apply -f configmap.yaml
+> kubectl apply -f security.yaml
+```
 
 The deployment of the blue service version can be created using the command:
 ```shell
@@ -67,9 +86,13 @@ The selector of the service matches the Blue service version:
     version: blue
 ```
 
+Once the microservice has started, you can view the quotes being displayed while opening a browser and pointing it to the external IP of the NodePort ```http://<ext_node_ip>:8080``` or issuing a ```curl <ext_node_ip>:8080``` command.
+
 **The Green service version deployment:**
 
 ![Green Version Deployment](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s2.png)  
+
+The Docker images are produced by running the **build-image-green.sh** script.
 
 The Green service version will be deployed in parallel with the Blue service version.
 ```shell
@@ -80,13 +103,18 @@ The Green service version will be deployed in parallel with the Blue service ver
 
 ![Blue-Green Switch](https://github.com/ddobrin/bluegreen-deployments-k8s/blob/master/images/BG-K8s3.png)
 
-To "switch over" to the Green service version, we are updating the selector of the Service and applying it in Kubernetes:
+To "switch over" to the Green service version, we are updating the selector of the service exposing the ```message-service``` and applying it in Kubernetes. Let's modify the ```/bluegreen-deployments-k8s/message-service/k8s/service.yaml``` file:
 ```yaml
   selector:
     app: message-service
     version: green
 ```
+
 The command to update the service with zero-downtime for the consumer is the same:
 ```shell
 > kubectl apply –f service.yaml
 ```
+
+You can view the quotes being displayed while opening a browser and pointing it to the external IP of the NodePort ```http://<ext_node_ip>:8080``` or issuing a ```curl <ext_node_ip>:8080``` command.
+
+Please note that, for the purpose of the demo, the message-service responds to client requests by indicating which version of the service produces the response: **green** in this case.
