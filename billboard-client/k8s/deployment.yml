@@ -12,11 +12,12 @@ spec:
       labels:
         app: billboard-client
     spec:
+      serviceAccountName: "spring-cloud"
       imagePullSecrets:
         - name: regcreddocker
       containers:
-      - image: triathlonguy/billboard-client:latest
-        imagePullPolicy: Always
+      - image: triathlonguy/billboard-client:blue
+        imagePullPolicy: IfNotPresent
         name: billboard-client
         ports:
           - containerPort: 8080
